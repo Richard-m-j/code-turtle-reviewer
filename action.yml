@@ -1,0 +1,40 @@
+name: 'Code-Turtle Reviewer'
+description: 'An AI-powered code reviewer that analyzes pull requests and provides feedback.'
+author: 'Richard Joseph'
+
+inputs:
+  github_token:
+    description: 'The GitHub token for posting comments.'
+    required: true
+  pinecone_api_key:
+    description: 'API key for Pinecone vector database.'
+    required: true
+  pinecone_environment:
+    description: 'Environment for your Pinecone index.'
+    required: true
+  serpapi_api_key:
+    description: 'API key for SerpApi to perform web searches.'
+    required: false
+  aws_access_key_id:
+    description: 'AWS access key ID for Bedrock.'
+    required: true
+  aws_secret_access_key:
+    description: 'AWS secret access key for Bedrock.'
+    required: true
+  aws_region_name:
+    description: 'AWS region name for Bedrock.'
+    required: false
+    default: 'us-east-1'
+
+runs:
+  using: 'docker'
+  image: 'docker://richardjoseph1/code-turtle-reviewer:latest'
+  env:
+    GITHUB_TOKEN: ${{ inputs.github_token }}
+    GITHUB_EVENT_PATH: ${{ github.event_path }}
+    PINECONE_API_KEY: ${{ inputs.pinecone_api_key }}
+    PINECONE_ENVIRONMENT: ${{ inputs.pinecone_environment }}
+    SERPAPI_API_KEY: ${{ inputs.serpapi_api_key }}
+    AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key_id }}
+    AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_access_key }}
+    AWS_REGION_NAME: ${{ inputs.aws_region_name }}
