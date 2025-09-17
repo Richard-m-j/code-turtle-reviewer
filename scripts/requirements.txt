@@ -1,0 +1,10 @@
+boto3==1.40.31
+langchain==0.3.27
+langchain-community==0.3.29
+pinecone==7.3.0
+python-dotenv==1.1.1
+sentence-transformers==5.1.0
+serpapi==0.1.5
+tqdm==4.67.1
+tree-sitter==0.25.1
+tree-sitter-languages==1.10.2

@@ -31,7 +31,7 @@ runs:
   image: 'docker://richardjoseph1/code-turtle-reviewer:latest'
   env:
     GITHUB_TOKEN: ${{ inputs.github_token }}
-    GITHUB_EVENT_PATH: ${{ github.event_path }}
+    GITHUB_EVENT_PATH: /github/workflow/event.json
     PINECONE_API_KEY: ${{ inputs.pinecone_api_key }}
     PINECONE_ENVIRONMENT: ${{ inputs.pinecone_environment }}
     SERPAPI_API_KEY: ${{ inputs.serpapi_api_key }}
