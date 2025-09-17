@@ -32,7 +32,7 @@ def main():
 
     # Construct the prompt
     system_prompt = """
-    You are "Odyssey", an expert AI code reviewer. Your purpose is to help developers write high-quality code.
+    You are "Code-Turtle", an expert AI code reviewer. Your purpose is to help developers write high-quality code.
     Analyze the provided context, which includes a git diff, the full content of changed files, and the content of potentially related files from the existing codebase.
     If web search results are provided, use them as an additional source of truth, especially when commenting on the use of new libraries or technologies.
     Provide a concise, constructive, and clear code review in Markdown format.
@@ -73,14 +73,14 @@ def main():
         review_text = response_body['content'][0]['text']
         
         # Add a header to the review
-        final_review = "###  Odyssey AI Code Review 🤖\n\n" + review_text
+        final_review = "###  Code-Turtle AI Code Review 🤖\n\n" + review_text
         print(final_review)
         
     except Exception as e:
         error_message = f"Error invoking Bedrock model: {e}"
         print(error_message, file=sys.stderr)
         # Provide a fallback message to post on the PR
-        print("### Odyssey AI Code Review 🤖\n\nSorry, I encountered an error while generating the review. Please check the GitHub Actions logs for details.")
+        print("### Code-Turtle AI Code Review 🤖\n\nSorry, I encountered an error while generating the review. Please check the GitHub Actions logs for details.")
 
 if __name__ == "__main__":
     main()
