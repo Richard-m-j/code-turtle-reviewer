@@ -58,6 +58,12 @@ def main():
 
     print(f"✅ Loaded context for PR #{pr_number} (Base: {base_sha[:7]}, Head: {head_sha[:7]})")
 
+    # FIX: Add the workspace to git's safe directory list at runtime
+    subprocess.run(
+        ['git', 'config', '--global', '--add', 'safe.directory', '/github/workspace'],
+        check=True
+    )
+
     # 2. Generate git diff
     print("📝 Generating git diff...")
     diff_process = subprocess.run(
