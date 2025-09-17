@@ -1,0 +1,19 @@
+# Git and GitHub
+.git
+.github
+.gitignore
+
+# Python artifacts
+__pycache__/
+*.pyc
+*.pyo
+.venv
+env/
+
+# IDE and OS-specific files
+.vscode/
+.idea/
+.DS_Store
+
+# Local development files
+.env
