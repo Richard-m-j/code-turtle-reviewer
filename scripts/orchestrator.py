@@ -113,8 +113,7 @@ def main():
 
     # 6. Post review comment to PR
     print(f"📤 Posting review to PR #{pr_number}...")
-    # Ensure the temporary file is written to the user's home directory
-    review_file = "/home/app/review_comment.md"
+    review_file = "review_comment.md"
     with open(review_file, "w") as f:
         f.write(review_markdown)
     
