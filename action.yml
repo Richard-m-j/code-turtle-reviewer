@@ -1,3 +1,4 @@
+# action.yml
 name: 'Code-Turtle Reviewer'
 description: 'An AI-powered code reviewer that analyzes pull requests and provides feedback.'
 author: 'Richard Joseph'
@@ -30,8 +31,9 @@ runs:
   using: 'docker'
   image: 'docker://richardjoseph1/code-turtle-reviewer:latest'
   env:
-    GITHUB_TOKEN: ${{ inputs.github_token }}
-    # The GITHUB_EVENT_PATH is automatically set by the runner, so you don't need to define it here.
+    # This is the critical change:
+    GH_TOKEN: ${{ inputs.github_token }}
+    GITHUB_EVENT_PATH: /github/workflow/event.json
     PINECONE_API_KEY: ${{ inputs.pinecone_api_key }}
     PINECONE_ENVIRONMENT: ${{ inputs.pinecone_environment }}
     SERPAPI_API_KEY: ${{ inputs.serpapi_api_key }}
