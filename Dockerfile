@@ -25,23 +25,19 @@ RUN apt-get update && \
     apt-get install -y gh --no-install-recommends && \
     rm -rf /var/lib/apt/lists/* && \
     addgroup --system app && \
-    adduser --system --ingroup app app && \
-    # Create and set ownership for the runtime home directory
-    mkdir -p /github/home && \
-    chown app:app /github/home
+    # Create the 'app' user with a dedicated home directory
+    adduser --system --ingroup app --home /home/app --shell /bin/sh app
 
 # Copy installed Python packages from the builder stage.
 COPY --from=builder /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
 COPY --from=builder /usr/local/bin /usr/local/bin
 
-# Configure git's safe directory as root during the build.
-RUN git config --global --add safe.directory /github/workspace
-
 # Copy the application scripts and set ownership.
 COPY --chown=app:app scripts/ /app/scripts/
 
-# Switch to the non-root user.
+# Switch to the non-root user and set the HOME directory.
 USER app
+ENV HOME=/home/app
 
 # Set the entrypoint for the container.
 ENTRYPOINT ["python", "/app/scripts/orchestrator.py"]
