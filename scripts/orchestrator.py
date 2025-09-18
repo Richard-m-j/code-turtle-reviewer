@@ -58,12 +58,8 @@ def main():
 
     print(f"✅ Loaded context for PR #{pr_number} (Base: {base_sha[:7]}, Head: {head_sha[:7]})")
 
-    # The 'safe.directory' config is now passed directly to the git diff command below,
-    # removing the need for the problematic global config command.
-
     # 2. Generate git diff
     print("📝 Generating git diff...")
-    # Pass the configuration directly to the git diff command using the '-c' flag.
     diff_process = subprocess.run(
         ['git', '-c', 'safe.directory=/github/workspace', 'diff', f"{base_sha}...{head_sha}"],
         capture_output=True,
@@ -105,20 +101,21 @@ def main():
     # 5. Call Review Synthesizer Agent
     print("✍️ Calling Review Synthesizer Agent...")
     synthesizer_script = os.path.join(os.path.dirname(__file__), 'synthesizer.py')
-    # Pass the potentially updated context_payload to the synthesizer
     review_markdown = run_script(synthesizer_script, json.dumps(context_payload))
     print("✅ Review synthesized successfully.")
 
     # 6. Post review comment to PR
     print(f"📤 Posting review to PR #{pr_number}...")
-    # Write the temporary file to /tmp to ensure permissions are not an issue.
     review_file = "/tmp/review_comment.md"
     with open(review_file, "w") as f:
         f.write(review_markdown)
     
+    # THIS IS THE CRITICAL CHANGE:
+    # Tell the 'gh' command to run in the git repository's directory.
     subprocess.run(
         ['gh', 'pr', 'comment', str(pr_number), '--body-file', review_file],
-        check=True
+        check=True,
+        cwd="/github/workspace"
     )
     
     os.remove(review_file)
