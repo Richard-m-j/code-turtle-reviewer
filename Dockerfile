@@ -1,10 +1,20 @@
-# Use an official lightweight Python image
-FROM python:3.10-slim
+# ---- Builder Stage ----
+# This stage installs Python dependencies to keep the final image lean.
+FROM python:3.11-slim-bookworm AS builder
 
-# Set the working directory inside the container
 WORKDIR /app
 
-# Install git and gh CLI
+COPY scripts/requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+
+# ---- Final Stage ----
+# This stage creates the lean, final image for the application.
+FROM python:3.11-slim-bookworm
+
+WORKDIR /app
+
+# Install runtime system dependencies and create the non-root user.
 RUN apt-get update && \
     apt-get install -y git wget --no-install-recommends && \
     mkdir -p -m 755 /etc/apt/keyrings && \
@@ -13,17 +23,23 @@ RUN apt-get update && \
     echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | tee /etc/apt/sources.list.d/github-cli.list > /dev/null && \
     apt-get update && \
     apt-get install -y gh --no-install-recommends && \
-    rm -rf /var/lib/apt/lists/*
+    rm -rf /var/lib/apt/lists/* && \
+    addgroup --system app && \
+    adduser --system --ingroup app app && \
+    # Create the directory GitHub Actions will use and give our user ownership.
+    # This is the key fix for the '.gitconfig' permission error.
+    mkdir -p /github/home && \
+    chown -R app:app /github/home
 
-# Add the repository directory to git's safe.directory list
-RUN git config --global --add safe.directory /github/workspace
+# Copy installed Python packages from the builder stage.
+COPY --from=builder /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
+COPY --from=builder /usr/local/bin /usr/local/bin
 
-# Copy and install Python dependencies
-COPY scripts/requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+# Copy the application scripts and set ownership.
+COPY --chown=app:app scripts/ /app/scripts/
 
-# Copy the application scripts to an absolute path
-COPY scripts/ /app/scripts/
+# Switch to the non-root user.
+USER app
 
-# Set the entrypoint to run the orchestrator using an absolute path
+# Set the entrypoint for the container.
 ENTRYPOINT ["python", "/app/scripts/orchestrator.py"]
