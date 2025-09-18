@@ -105,14 +105,6 @@ def main():
     with open(review_file, "w") as f:
         f.write(review_markdown)
     
-    # Mark the workspace as safe for git calls.
-    subprocess.run(
-        ['git', 'config', '--global', '--add', 'safe.directory', '/github/workspace'],
-        check=True
-    )
-    
-    # THIS IS THE FINAL FIX:
-    # Explicitly tell 'gh' which repository to use.
     repo = os.getenv("GITHUB_REPOSITORY")
     if not repo:
         raise ValueError("GITHUB_REPOSITORY environment variable not set.")
