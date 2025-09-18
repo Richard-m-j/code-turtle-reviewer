@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 load_dotenv()
 # --- Configuration ---
 AWS_REGION_NAME = os.getenv("AWS_REGION_NAME", "us-east-1")
-MODEL_ID = "anthropic.claude-3-sonnet-20240229-v1:0"
+MODEL_ID = "anthropic.claude-3-haiku-20240307-v1:0"
 
 def format_context_for_prompt(file_dict, section_title):
     """Formats a dictionary of file contents into a string for the prompt."""
