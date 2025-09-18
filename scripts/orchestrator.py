@@ -29,7 +29,6 @@ def find_new_imports(diff_text):
     # Regex to find lines starting with '+' and containing 'import' or 'from'
     import_pattern = re.compile(r'^\+\s*(?:from\s+([a-zA-Z0-9_]+)|import\s+([a-zA-Z0-9_]+))')
     new_libraries = set()
-    
     for line in diff_text.split('\n'):
         match = import_pattern.match(line)
         if match:
@@ -37,7 +36,6 @@ def find_new_imports(diff_text):
             lib_name = match.group(1) or match.group(2)
             if lib_name:
                 new_libraries.add(lib_name)
-    
     return list(new_libraries)
 
 def main():
@@ -62,10 +60,7 @@ def main():
     print("📝 Generating git diff...")
     diff_process = subprocess.run(
         ['git', '-c', 'safe.directory=/github/workspace', 'diff', f"{base_sha}...{head_sha}"],
-        capture_output=True,
-        text=True,
-        check=True,
-        cwd="/github/workspace"
+        capture_output=True, text=True, check=True, cwd="/github/workspace"
     )
     diff_output = diff_process.stdout
     if not diff_output.strip():
@@ -110,12 +105,21 @@ def main():
     with open(review_file, "w") as f:
         f.write(review_markdown)
     
-    # THIS IS THE CRITICAL CHANGE:
-    # Tell the 'gh' command to run in the git repository's directory.
+    # Mark the workspace as safe for git calls.
     subprocess.run(
-        ['gh', 'pr', 'comment', str(pr_number), '--body-file', review_file],
-        check=True,
-        cwd="/github/workspace"
+        ['git', 'config', '--global', '--add', 'safe.directory', '/github/workspace'],
+        check=True
+    )
+    
+    # THIS IS THE FINAL FIX:
+    # Explicitly tell 'gh' which repository to use.
+    repo = os.getenv("GITHUB_REPOSITORY")
+    if not repo:
+        raise ValueError("GITHUB_REPOSITORY environment variable not set.")
+        
+    subprocess.run(
+        ['gh', 'pr', 'comment', str(pr_number), '--body-file', review_file, '--repo', repo],
+        check=True
     )
     
     os.remove(review_file)
