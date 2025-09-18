@@ -113,7 +113,7 @@ def main():
 
     # 6. Post review comment to PR
     print(f"📤 Posting review to PR #{pr_number}...")
-    review_file = "review_comment.md"
+    review_file = "/tmp/review_comment.md"
     with open(review_file, "w") as f:
         f.write(review_markdown)
     

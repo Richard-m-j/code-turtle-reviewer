@@ -31,8 +31,7 @@ runs:
   using: 'docker'
   image: 'docker://richardjoseph1/code-turtle-reviewer:latest'
   env:
-    # This is the critical change:
-    GH_TOKEN: ${{ inputs.github_token }}
+    GH_TOKEN: ${{ inputs.github_token }} 
     GITHUB_EVENT_PATH: /github/workflow/event.json
     PINECONE_API_KEY: ${{ inputs.pinecone_api_key }}
     PINECONE_ENVIRONMENT: ${{ inputs.pinecone_environment }}
